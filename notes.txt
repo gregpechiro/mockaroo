@@ -1,0 +1,14 @@
+
+
+HELP
+
+-p --package    Full package from GOPATH to the struct.
+                Your can use main if the struct is in the main program you are working on.
+                This requires you to use -f
+
+-s --struct     The Name of the struct you want to generate data for. This is case sensitive
+
+-c --Count      The number of structs in a slice you want generated.
+                It will always generate a slice even if count is 1
+
+-f --file       The file where the struct is located. If -p is anything other than "main" this will be ignored
