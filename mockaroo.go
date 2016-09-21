@@ -19,6 +19,7 @@ type Setup struct {
 	PkgName         string
 	StrctName       string
 	Vars            interface{}
+	Import          bool
 	Imports         map[string]struct{}
 	Match           bool
 }
@@ -33,8 +34,10 @@ func NewSetup(fullPkg, strct string, ptr interface{}, match bool) Setup {
 		Match:           match,
 	}
 	if fullPkg == "main" {
+		s.Import = false
 		s.PkgName = GetShortPackage(s.AbsolutePkgName)
 	} else {
+		s.Import = true
 		s.PkgName = GetShortPackage(fullPkg)
 		s.Imports[fullPkg] = struct{}{}
 	}
