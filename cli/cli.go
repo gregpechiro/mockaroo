@@ -12,7 +12,7 @@ func main() {
 
 	s := {{ if ne .fullPackage "main" }}{{ .package }}.{{ end }}{{ .struct }}{}
 
-	mockTypes := mockaroo.NewMockTypes("{{ .fullPackage }}", "{{ .struct }}", &s)
+	mockTypes := mockaroo.NewMockTypes("{{ .fullPackage }}", "{{ .struct }}", &s, {{ .match }})
 	b := mockaroo.GetData(mockTypes.MTypes, {{ .count }})
 
 	var ss []{{ if ne .fullPackage "main" }}{{ .package }}.{{ end }}{{ .struct }}

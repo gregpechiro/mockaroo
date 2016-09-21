@@ -19,6 +19,7 @@ var fullPkg string   //= "main"
 var strct string     // = "User"
 var strctFile string //= "user.go"
 var count int
+var match bool
 
 func main() {
 
@@ -60,6 +61,7 @@ func main() {
 		"package":     pkg,
 		"struct":      strct,
 		"count":       count,
+		"match":       match,
 	}); err != nil {
 		panic(err)
 	}

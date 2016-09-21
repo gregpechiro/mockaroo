@@ -1,0 +1,55 @@
+App Bundle ID
+App Name
+App Version
+Bitcoin Address
+Boolean
+Buzzword
+Catch Phrase
+City
+Color
+Company Name
+Country Code
+Credit Card #
+Credit Card Type
+Currency
+Currency Code
+Domain Name
+Drug Company
+Drug Name (Brand)
+Email Address
+Fake Company Name
+File Name
+First Name
+Frequency
+Full Name
+Gender
+Gender (abbrev)
+IP Address v4
+IP Address v6
+ISBN
+Job Title
+Language
+Last Name
+Latitude
+LinkedIn Skill
+Longitude
+MAC Address
+MD5MIME Type
+MongoDB ObjectID
+Password
+Phone
+Postal Code
+Race
+SHA1
+SHA256
+Shirt Size
+SSN
+State
+Street Address
+Street Name
+Street Number
+Street Suffix
+Suffix
+Time Zone
+Title
+User Agent

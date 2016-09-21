@@ -1,6 +1,6 @@
 package user
 
-import "github.com/gregpechiro/mockaroo/address"
+import "github.com/gregpechiro/mockaroo/test-structs/address"
 
 // type User struct {
 // 	Name   string
@@ -9,6 +9,7 @@ import "github.com/gregpechiro/mockaroo/address"
 // }
 
 type User struct {
+	SomeMap        map[int]interface{}
 	Name           string
 	Age            int
 	Active         bool

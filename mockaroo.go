@@ -19,23 +19,22 @@ type Setup struct {
 	PkgName         string
 	StrctName       string
 	Vars            interface{}
-	Import          bool
 	Imports         map[string]struct{}
+	Match           bool
 }
 
-func NewSetup(fullPkg, strct string, ptr interface{}) Setup {
+func NewSetup(fullPkg, strct string, ptr interface{}, match bool) Setup {
 	oStrct := reflect.ValueOf(ptr).Elem().Type()
 	s := Setup{
 		AbsolutePkgName: oStrct.PkgPath(),
 		FullPkgName:     fullPkg,
 		StrctName:       strct,
 		Imports:         make(map[string]struct{}),
+		Match:           match,
 	}
 	if fullPkg == "main" {
-		s.Import = false
 		s.PkgName = GetShortPackage(s.AbsolutePkgName)
 	} else {
-		s.Import = true
 		s.PkgName = GetShortPackage(fullPkg)
 		s.Imports[fullPkg] = struct{}{}
 	}
@@ -60,9 +59,9 @@ type MockTypes struct {
 	Setup    Setup
 }
 
-func NewMockTypes(fullPkg, strct string, ptr interface{}) *MockTypes {
+func NewMockTypes(fullPkg, strct string, ptr interface{}, match bool) *MockTypes {
 	m := MockTypes{}
-	m.Setup = NewSetup(fullPkg, strct, ptr)
+	m.Setup = NewSetup(fullPkg, strct, ptr, match)
 	m.Template = "{{ define \"vars\" }}"
 	GetFields(ptr, "", &m)
 	m.Template += "\n{{ end }}"
@@ -111,57 +110,81 @@ func GetFields(ptr interface{}, start string, mockTypes *MockTypes) {
 func SetMockType(t reflect.Type, mockType MockType, mockTypes *MockTypes) {
 	switch t.Kind() {
 	case reflect.String:
-		mockType.Type = "Full Name"
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Words"
+			mockType.Min = 1
+			mockType.Max = 2
+		}
 		mockTypes.Template += "\"{{ " + mockTypes.Pre + mockTypes.TempName + " }}\","
 	case reflect.Int:
-		mockType.Type = "Number"
-		mockType.Max = 9223372036854775807
-		mockType.Min = -9223372036854775808
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 9223372036854775807
+			mockType.Min = -9223372036854775808
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Int8:
-		mockType.Type = "Number"
-		mockType.Max = 127
-		mockType.Min = -128
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 127
+			mockType.Min = -128
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Int16:
-		mockType.Type = "Number"
-		mockType.Max = 32767
-		mockType.Min = -32768
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 32767
+			mockType.Min = -32768
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Int32:
-		mockType.Type = "Number"
-		mockType.Max = 2147483647
-		mockType.Min = -2147483648
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 2147483647
+			mockType.Min = -2147483648
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Int64:
-		mockType.Type = "Number"
-		mockType.Max = 9223372036854775807
-		mockType.Min = -9223372036854775808
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 9223372036854775807
+			mockType.Min = -9223372036854775808
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Uint:
-		mockType.Type = "Number"
-		mockType.Max = 18446744073709551615
-		mockType.Min = 0
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 18446744073709551615
+			mockType.Min = 0
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Uint8:
-		mockType.Type = "Number"
-		mockType.Max = 255
-		mockType.Min = 1
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 255
+			mockType.Min = 1
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Uint16:
-		mockType.Type = "Number"
-		mockType.Max = 65535
-		mockType.Min = 1
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 65535
+			mockType.Min = 1
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Uint32:
-		mockType.Type = "Number"
-		mockType.Max = 4294967295
-		mockType.Min = 1
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 4294967295
+			mockType.Min = 1
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Uint64:
-		mockType.Type = "Number"
-		mockType.Max = 18446744073709551615
-		mockType.Min = 0
+		if !mockTypes.Setup.Match || !matchMochType(t.Name(), &mockType) {
+			mockType.Type = "Number"
+			mockType.Max = 18446744073709551615
+			mockType.Min = 0
+		}
 		mockTypes.Template += "{{ " + mockTypes.Pre + mockTypes.TempName + " }},"
 	case reflect.Float32:
 		mockType.Type = "Number"
@@ -197,6 +220,9 @@ func SetMockType(t reflect.Type, mockType MockType, mockTypes *MockTypes) {
 		mockTypes.Template += mockTypes.Setup.GetPkgPrefix(t.PkgPath()) + t.Name() + "{"
 		GetFields(reflect.Indirect(reflect.New(t)), mockType.Name+".", mockTypes)
 		mockTypes.Template += "\n},"
+		return
+	case reflect.Map:
+		mockTypes.Template += "make(" + t.String() + "),"
 		return
 	}
 	mockTypes.MTypes = append(mockTypes.MTypes, mockType)
