@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"flag"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -13,12 +15,35 @@ import (
 	"github.com/gregpechiro/mockaroo/cli"
 )
 
-var fullPkg = "main"
-var strct = "User"
-var strctFile = "user.go"
-var count = 10
+var fullPkg string   //= "main"
+var strct string     // = "User"
+var strctFile string //= "user.go"
+var count int
 
 func main() {
+
+	flag.StringVar(&fullPkg, "p", "", "Full package from GOPATH to the struct. Your can use main if the struct is in the main program you are working on. This requires you to use -f")
+	flag.StringVar(&strct, "s", "", "The Name of the struct you want to generate data for. This is case sensitive")
+	flag.StringVar(&strctFile, "f", "", "The file where the struct is located. If -p is anything other than \"main\" this will be ignored")
+	flag.IntVar(&count, "c", 0, "The number of structs in a slice you want generated. It will always generate a slice even if count is 1")
+	flag.Parse()
+
+	if fullPkg == "" {
+		fmt.Println("-p (package) cannot be empty")
+		return
+	}
+	if strct == "" {
+		fmt.Println("-s (struct name) cannot be empty")
+		return
+	}
+	if fullPkg == "main" && strctFile == "" {
+		fmt.Println("-f (struct file) cannot be empty when -p (package) is set to main")
+		return
+	}
+	if count < 1 {
+		fmt.Println("-c (count) must be greater than 0")
+		return
+	}
 
 	pkg := mockaroo.GetShortPackage(fullPkg)
 
@@ -27,16 +52,15 @@ func main() {
 		log.Println("Error parsing")
 		panic(err)
 	}
+
 	buf := new(bytes.Buffer)
 
-	err = t.Execute(buf, map[string]interface{}{
+	if err := t.Execute(buf, map[string]interface{}{
 		"fullPackage": fullPkg,
 		"package":     pkg,
 		"struct":      strct,
 		"count":       count,
-	})
-
-	if err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
@@ -44,19 +68,17 @@ func main() {
 		panic(err)
 	}
 
-	if fullPkg != "main" && fullPkg != "this" {
+	if fullPkg != "main" {
 		strctFile = ""
 	}
 
 	finalfile := strings.Replace(fullPkg, "/", ".", -1) + "-" + strct + ".go"
 
-	err = exec.Command("go", "run", "mockaroo-temp.go", strctFile).Run()
-	if err != nil {
+	if err := exec.Command("go", "run", "mockaroo-temp.go", strctFile).Run(); err != nil {
 		panic(err)
 	}
 
-	err = exec.Command("gofmt", "-w", finalfile).Run()
-	if err != nil {
+	if err := exec.Command("gofmt", "-w", finalfile).Run(); err != nil {
 		panic(err)
 	}
 

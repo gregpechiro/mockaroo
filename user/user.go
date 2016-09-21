@@ -1,5 +1,7 @@
 package user
 
+import "github.com/gregpechiro/mockaroo/address"
+
 // type User struct {
 // 	Name   string
 // 	Age    int
@@ -10,15 +12,8 @@ type User struct {
 	Name           string
 	Age            int
 	Active         bool
-	HomeAddress    Address
-	FavoritePlaces []Address
+	HomeAddress    address.Address
+	FavoritePlaces []address.Address
 	Friends        []string
 	Mother         string
-}
-
-type Address struct {
-	Street string
-	City   string
-	State  string
-	Zip    string
 }

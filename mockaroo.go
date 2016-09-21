@@ -20,6 +20,7 @@ type Setup struct {
 	StrctName       string
 	Vars            interface{}
 	Import          bool
+	Imports         map[string]struct{}
 }
 
 func NewSetup(fullPkg, strct string, ptr interface{}) Setup {
@@ -28,6 +29,7 @@ func NewSetup(fullPkg, strct string, ptr interface{}) Setup {
 		AbsolutePkgName: oStrct.PkgPath(),
 		FullPkgName:     fullPkg,
 		StrctName:       strct,
+		Imports:         make(map[string]struct{}),
 	}
 	if fullPkg == "main" {
 		s.Import = false
@@ -35,18 +37,19 @@ func NewSetup(fullPkg, strct string, ptr interface{}) Setup {
 	} else {
 		s.Import = true
 		s.PkgName = GetShortPackage(fullPkg)
+		s.Imports[fullPkg] = struct{}{}
 	}
 	return s
 }
 
-func (s Setup) GetPkgPrefix(fullPkg string) string {
-	if s.AbsolutePkgName == fullPkg {
-		if s.FullPkgName == "main" {
-			return ""
-		}
-		return GetShortPackage(fullPkg) + "."
+func (s *Setup) GetPkgPrefix(fullPkg string) string {
+	if s.AbsolutePkgName == fullPkg && s.FullPkgName == "main" {
+		return ""
 	}
-	return fullPkg + "."
+	if s.AbsolutePkgName != fullPkg {
+		s.Imports[fullPkg] = struct{}{}
+	}
+	return GetShortPackage(fullPkg) + "."
 }
 
 type MockTypes struct {
@@ -262,7 +265,9 @@ func GenVars(mockTypes *MockTypes) {
 var StartTemp = `
 package main
 
-{{ if .Setup.Import }}import "{{ .Setup.FullPkgName }}"{{ end }}
+{{ if .Setup.Imports }}import (
+{{ range $import, $v := .Setup.Imports }}"{{ $import }}"
+{{ end }}){{ end }}
 
 var users []{{ if .Setup.Import }}{{ .Setup.PkgName }}.{{ end }}{{ .Setup.StrctName }} = []{{ if .Setup.Import }}{{ .Setup.PkgName }}.{{ end }}{{ .Setup.StrctName }}{ {{ range .Setup.Vars }}
 	    { {{ template "vars" . }}
