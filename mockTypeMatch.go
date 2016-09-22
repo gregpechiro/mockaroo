@@ -82,7 +82,7 @@ var mockRegex map[string]MockType = map[string]MockType{
 		Type: "Gender",
 	},
 	"ip[-_]*address[-_]*(v4){0,1}": MockType{
-		Type: "IP Addredd v4",
+		Type: "IP Address v4",
 	},
 	"ip[-_]*address[-_]*v6": MockType{
 		Type: "IP Address v6",
@@ -114,6 +114,12 @@ var mockRegex map[string]MockType = map[string]MockType{
 	"md5mime[-_]*type": MockType{
 		Type: "MD5MIME Type",
 	},
+	"money": MockType{
+		Type:   "Money",
+		Min:    0,
+		Max:    1000,
+		Symbol: "$",
+	},
 	"mongodb[-_]*object[-_]*id": MockType{
 		Type: "MongoDB ObjectID",
 	},
@@ -123,7 +129,7 @@ var mockRegex map[string]MockType = map[string]MockType{
 	"phone": MockType{
 		Type: "Phone",
 	},
-	"postal[-_]*code": MockType{
+	"(postal[-_]*code|zip)": MockType{
 		Type: "Postal Code",
 	},
 	"race": MockType{
@@ -142,7 +148,8 @@ var mockRegex map[string]MockType = map[string]MockType{
 		Type: "SSN",
 	},
 	"state": MockType{
-		Type: "State",
+		Type:         "State",
+		OnlyUSPlaces: true,
 	},
 	"street[-_]*(address){0,1}": MockType{
 		Type: "Street Address",
@@ -178,6 +185,8 @@ func matchMochType(name string, mockType *MockType) bool {
 			mockType.Type = m.Type
 			mockType.Min = m.Min
 			mockType.Max = m.Max
+			mockType.Symbol = m.Symbol
+			mockType.OnlyUSPlaces = m.OnlyUSPlaces
 			break
 		}
 	}

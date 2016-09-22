@@ -12,6 +12,7 @@ import (
 )
 
 var SLICERANGE = "[1-10]"
+var JSONARRAYMAX = 10
 
 type Setup struct {
 	AbsolutePkgName string
@@ -73,12 +74,16 @@ func NewMockTypes(fullPkg, strct string, ptr interface{}, match bool) *MockTypes
 
 type MockType struct {
 	Name         string `json:"name"`
-	PercentBlank int    `json:"percentBlank"`
-	Formula      string `json:"formula"`
+	PercentBlank int    `json:"percentBlank,omitempty"`
+	Formula      string `json:"formula,omitempty"`
 	Type         string `json:"type"`
-	Min          int64  `json:"min,omitempty"`
+	Min          int    `json:"min,omitempty"`
 	Max          uint64 `json:"max,omitempty"`
 	Decimals     int    `json:"decimals"`
+	OnlyUSPlaces bool   `json:"onlyUSPlaces"`
+	MinItems     int    `json:"minItems,omitempty"`
+	MaxItems     int    `json:"maxItems,omitempty"`
+	Symbol       string `json:"symbol,omitempty"`
 }
 
 func NewMockType(name, typ string) MockType {
@@ -207,6 +212,8 @@ func SetMockType(t reflect.Type, mockType MockType, mockTypes *MockTypes) {
 	case reflect.Slice:
 		if t.Elem().Kind() == reflect.Struct {
 			mockType.Type = "JSON Array"
+			mockType.MinItems = 1
+			mockType.MaxItems = JSONARRAYMAX
 			mockTypes.MTypes = append(mockTypes.MTypes, mockType)
 			mockTypes.Template += " []" + mockTypes.Setup.GetPkgPrefix(t.Elem().PkgPath()) + t.Elem().Name() + "{ {{ range $" + mockTypes.TempName + " := ." + mockTypes.TempName + " }}\n"
 		} else {
@@ -298,7 +305,7 @@ package main
 {{ range $import, $v := .Setup.Imports }}"{{ $import }}"
 {{ end }}){{ end }}
 
-var users []{{ if .Setup.Import }}{{ .Setup.PkgName }}.{{ end }}{{ .Setup.StrctName }} = []{{ if .Setup.Import }}{{ .Setup.PkgName }}.{{ end }}{{ .Setup.StrctName }}{ {{ range .Setup.Vars }}
+var multiple{{ .Setup.StrctName }} []{{ if .Setup.Import }}{{ .Setup.PkgName }}.{{ end }}{{ .Setup.StrctName }} = []{{ if .Setup.Import }}{{ .Setup.PkgName }}.{{ end }}{{ .Setup.StrctName }}{ {{ range .Setup.Vars }}
 	    { {{ template "vars" . }}
 	},{{ end }}
 }

@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	{{ if gt .maxSlice 0 }}mockaroo.SLICERANGE = "[1-{{ .maxSlice }}]"
+	mockaroo.JSONARRAYMAX = {{ .maxSlice }}{{ end }}
 
 	s := {{ if ne .fullPackage "main" }}{{ .package }}.{{ end }}{{ .struct }}{}
 
